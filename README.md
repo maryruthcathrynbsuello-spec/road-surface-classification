@@ -74,3 +74,105 @@ _To be filled after Stage 3._
 |---|---|---|---|
 | Baseline CNN | | | |
 | MobileNetV2 | | | |
+
+## Streamlit Setup Guide
+
+Streamlit Project Setup Guide
+
+Follow the steps below to set up and run the Streamlit application locally.
+
+1. Clone the Repository (IF NAGAWA NA, NO NEED)
+
+Open your terminal and clone the repository:
+
+git clone [REPOSITORY_URL]
+
+Then navigate into the project folder:
+
+cd [PROJECT_FOLDER]
+2. Install Streamlit
+
+Install Streamlit using pip:
+
+pip install streamlit
+
+You can verify that Streamlit was installed successfully with:
+
+streamlit --version
+
+3. Set Up the Virtual Environment (.venv)
+
+Create a virtual environment named .venv:
+
+python -m venv .venv
+Activate the Virtual Environment
+
+Windows:
+
+.venv\Scripts\activate
+
+macOS / Linux:
+
+source .venv/bin/activate
+
+Once activated, your terminal should show something similar to:
+
+(.venv)
+Install Streamlit Inside .venv
+
+After activating the virtual environment, install Streamlit:
+
+pip install streamlit
+
+Important: Make sure .venv is activated before installing packages or running the application.
+
+4. Run the Streamlit Application
+
+From the project directory, navigate to the app folder:
+
+cd app
+
+Then navigate to the specific folder you are working on.
+
+For example, if you are working on the dashboard folder:
+
+cd dashboard
+
+Run the Streamlit application:
+
+streamlit run main.py
+
+The complete command sequence will look like:
+
+cd app
+cd dashboard
+streamlit run main.py
+
+Streamlit will provide a local URL in the terminal, usually:
+
+http://localhost:8501
+
+Open the URL in your browser to access the application.
+
+Quick Setup
+
+If you already have Python and Git installed, the basic setup is:
+
+git clone [REPOSITORY_URL]
+cd [PROJECT_FOLDER]
+
+python -m venv .venv
+.venv\Scripts\activate
+
+pip install streamlit
+
+cd app
+cd dashboard
+
+streamlit run main.py
+Notes
+Always activate .venv before running the application.
+Replace dashboard with the folder you are currently working on.
+Replace [REPOSITORY_URL] and [PROJECT_FOLDER] with the actual repository information.
+To leave the virtual environment, use:
+deactivate
