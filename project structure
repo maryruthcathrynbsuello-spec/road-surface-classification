@@ -1,1 +1,11 @@
-
+road-surface-classification/
+├── notebooks/
+│   ├── 01_data_cleaning.ipynb      (the Stage 0-1 notebook)
+│   ├── 02_baseline_cnn.ipynb
+│   └── 03_transfer_learning.ipynb
+├── src/                            (reusable .py code: helpers, Grad-CAM)
+├── app/                            (Streamlit app, Stage 4)
+├── docs/                           (paper, notes, figures)
+├── README.md
+├── requirements.txt
+└── .gitignore
