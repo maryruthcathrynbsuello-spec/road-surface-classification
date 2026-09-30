@@ -1,0 +1,5 @@
+*.zip
+data/
+processed/
+*.keras
+*.h5
