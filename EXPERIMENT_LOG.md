@@ -5,7 +5,7 @@ Only **validation** numbers go here. The test set is used once, in Stage 3.
 
 | Run name | Date | Who | Model | Key settings | Epochs | Val acc | Val macro F1 | Weakest class | Notes |
 |---|---|---|---|---|---|---|---|---|---|
-| baseline_cnn_v1 | | | Baseline CNN | lr 1e-3, dropout 0.5, filters 32-256 | | | | | |
+| baseline_cnn_v1 | 2026-10-02| Mary Ruth Cathryn B. Suello | Baseline CNN | lr 1e-3, dropout 0.5, filters 32-256 | 9 | 1.0 | 1.0 | "train" | First Run |
 | mobilenetv2_v1 | | | MobileNetV2 | head lr 1e-3, fine lr 1e-5, 30 layers | | | | | |
 | efficientnetb0_v1 | | | EfficientNetB0 | same as above | | | | | |
 
