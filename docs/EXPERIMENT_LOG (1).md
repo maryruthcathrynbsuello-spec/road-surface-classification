@@ -39,7 +39,7 @@ pothole	| 30 of 62 (48%) | 	Weak
 damaged asphalt	| 42 of 104 (40%) | Weakest. 32% go to crack and 19% to pothole.
 
 With 384 images, the overall accuracy has about ±5 points of uncertainty, about 61%.
-
+the test result (accuracy 0.609, macro F1 0.652, open manhole 9 of 11), the Grad-CAM note, and the border-test result.
 ## Rules
 - Change one thing at a time, then bump the version (`_v2`, `_v3`).
 - Never overwrite an old run. Old runs are evidence for the paper.
