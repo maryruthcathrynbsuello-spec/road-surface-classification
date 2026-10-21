@@ -3,3 +3,16 @@ data/
 processed/
 *.keras
 *.h5
+
+# model weights and archives
+*.pt
+*.keras
+*.zip
+app/models/*
+!app/models/README.md
+
+# datasets and local files
+yolo_data/
+processed/
+.venv/
+__pycache__/
