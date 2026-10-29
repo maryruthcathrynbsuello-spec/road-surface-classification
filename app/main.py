@@ -1,3 +1,6 @@
 import streamlit as st
+from components.sidebar import render_sidebar
 
-from profile import Profile
+
+page = render_sidebar()
+page.run()

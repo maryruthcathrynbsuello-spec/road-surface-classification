@@ -7,8 +7,8 @@ st.set_page_config(
     layout="wide",
 )
 
-PHOTO_SIZE = 180         
-CLASS_CARD_HEIGHT = 170  
+PHOTO_SIZE = 180
+CLASS_CARD_HEIGHT = 170
 
 
 def team_photo(path, size=PHOTO_SIZE):
@@ -116,7 +116,7 @@ st.markdown(f"> {DATASET_CITATION}")
 st.divider()
 
 st.header("Our Team")
-per_row = 4  
+per_row = 4
 for row_start in range(0, len(TEAM), per_row):
     cols = st.columns(per_row, gap="large")
     for col, member in zip(cols, TEAM[row_start : row_start + per_row]):

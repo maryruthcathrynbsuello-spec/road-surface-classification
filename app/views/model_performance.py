@@ -23,7 +23,6 @@ def make_mock_data(seed=42):
     rng = np.random.default_rng(seed)
     n = len(CLASSES)
 
-    
     counts = np.array([60, 70, 50, 40, 11, 90])
     cm = np.zeros((n, n), dtype=int)
     for i, c in enumerate(counts):
@@ -33,7 +32,7 @@ def make_mock_data(seed=42):
         weights[i] = 0
         weights /= weights.sum()
         cm[i] += rng.multinomial(c - correct, weights)
-    
+
     for a, b, k in [(0, 2, 4), (2, 0, 3), (1, 3, 4), (3, 1, 3)]:
         k = min(k, cm[a, a] - 1)
         cm[a, b] += k
@@ -51,13 +50,11 @@ def make_mock_data(seed=42):
     }, index=CLASSES)
     table.index.name = "Class"
 
-    
     comparison = pd.DataFrame({
         "Val accuracy": [0.78, 0.89, 0.91],
         "Val macro F1": [0.74, 0.86, 0.88],
     }, index=["Baseline CNN", "MobileNetV2", "EfficientNetB0"])
 
-    
     ep = np.arange(1, 21)
     acc = pd.DataFrame({
         "Train": 1 - 0.65 * np.exp(-ep / 5) + rng.normal(0, 0.004, 20),
