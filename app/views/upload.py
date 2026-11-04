@@ -1,7 +1,13 @@
 import io
+import json
+import uuid
+from datetime import datetime
+from pathlib import Path
 
 import streamlit as st
 from PIL import Image, UnidentifiedImageError
+
+HISTORY_FILE = Path(__file__).with_name("history.json")  # same file history.py reads
 
 # ---------- Page setup ----------
 st.set_page_config(
@@ -24,6 +30,27 @@ st.session_state.setdefault("uploader_key", 0)
 def classify(image: Image.Image):
     """TODO: replace with your real model. Return (label, confidence_percent)."""
     return "POTHOLE", 94.2
+
+
+def save_history(images, results):
+    """Append one history row per image to history.json (survives refresh)."""
+    try:
+        history = json.loads(HISTORY_FILE.read_text())
+    except (FileNotFoundError, json.JSONDecodeError):
+        history = []
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    for item, (label, conf) in zip(images, results):
+        history.append(
+            {
+                "id": uuid.uuid4().hex,
+                "time": now,
+                "file_name": item["name"],
+                "detections": 1,
+                "labels": [label],
+                "status": "Needs review" if conf < LOW_CONFIDENCE else "OK",
+            }
+        )
+    HISTORY_FILE.write_text(json.dumps(history, indent=2))
 
 
 def reset():
@@ -140,6 +167,10 @@ with right:
             for i, item in enumerate(images, start=1):
                 results.append(classify(load_image(item["bytes"])))
                 progress.progress(i / n, text=f"Analyzing {i} of {n}...")
+
+            # Save to persistent history (shown on the History tab)
+            save_history(images, results)
+
             st.session_state.images = images
             st.session_state.results = results
             st.rerun()

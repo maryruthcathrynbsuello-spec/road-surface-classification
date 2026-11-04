@@ -38,6 +38,7 @@ OBJECTIVES = [
     "Classify road-surface images into six categories: crack, pothole, damaged asphalt, water-filled pothole, open manhole, and normal road surface.",
     "Build a model that automatically identifies road-surface conditions from images using a Convolutional Neural Network (CNN).",
     "Evaluate the model using unseen test images to measure its classification performance.",
+    "Detect and localize individual road defects in images using a YOLO object detection model.",
 ]
 
 CLASSES = [
@@ -63,6 +64,20 @@ LIMITATIONS = [
     "The application should flag predictions with low confidence for human review rather than treating them as certain classifications.",
     "The maintenance priority system is a team-defined assumption and does not represent an official road-maintenance standard.",
     "The model should be evaluated on unseen test images to assess how well it generalizes beyond the training data.",
+]
+
+YOLO_OVERVIEW = (
+    "In addition to the CNN classifier, RoadWatch uses a YOLO (You Only Look Once) object detection model. "
+    "While the CNN assigns one label to a whole image, YOLO locates individual road defects and draws "
+    "bounding boxes around them, which is useful when an image contains more than one problem."
+)
+
+YOLO_DETAILS = [
+    "Model version: TODO (e.g., YOLOv8n / YOLO11s)",
+    "Task: object detection, localizing road-surface defects with bounding boxes and confidence scores.",
+    "Detected classes: TODO (list the classes it was trained on)",
+    "Training data: TODO (dataset used, number of images, image size)",
+    "Performance: TODO (e.g., mAP@50, precision, recall on the test set)",
 ]
 
 DATASET_CITATION = "Moni, K., Ahmed, T., Das, N., Ripa, M. T. A., Saha, S. K., Supti, S. J., & Noor, J. (2026). Multi-class Road-Surface Condition Dataset for Automated Pothole and Road-Damage Classification. Mendeley Data. https://data.mendeley.com/datasets/c43y93xswd/1"
@@ -94,6 +109,13 @@ for row_start in range(0, len(CLASSES), 3):
         with col.container(border=True, height=CLASS_CARD_HEIGHT):
             st.subheader(name)
             st.write(desc)
+
+st.divider()
+
+st.header("Detection Model (YOLO)")
+st.write(YOLO_OVERVIEW)
+for item in YOLO_DETAILS:
+    st.markdown(f"- {item}")
 
 st.divider()
 
