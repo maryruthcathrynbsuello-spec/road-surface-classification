@@ -14,8 +14,7 @@ MODEL_NAME = "efficientnetb0_v2"
 METRICS_FILE = REPORT_DIR / f"{MODEL_NAME}_metrics.json"
 
 
-HISTORY_FILE = ROOT / "data" / "history.csv"     
-HISTORY_CLASS_COLUMN = "predicted_class"         
+HISTORY_FILE = Path(__file__).with_name("history.json")
 
 
 def pretty(name):
@@ -41,23 +40,23 @@ def load_metrics():
 
 
 def load_history():
-    """Return a DataFrame of past predictions, or None if there is no history."""
+    """Return saved upload records, or None if no predictions are available."""
     if not HISTORY_FILE.exists():
         return None
     try:
-        if HISTORY_FILE.suffix == ".json":
-            df = pd.read_json(HISTORY_FILE)
-        else:
-            df = pd.read_csv(HISTORY_FILE)
-    except Exception as e:
+        records = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as e:
         st.error(f"Could not read {HISTORY_FILE.name}: {e}")
         return None
-    return df if len(df) else None
+    if not isinstance(records, list):
+        st.error(f"Expected {HISTORY_FILE.name} to contain a list of records.")
+        return None
+    return records or None
 
 
 metrics = load_metrics()
 
-# Header 
+# Header
 st.title("Road Surface Condition Dashboard")
 st.caption("Overview of the model and of the images classified so far.")
 
@@ -77,7 +76,7 @@ else:
     st.caption(f"No results yet. These fill in once "
                f"`docs/data_reports/{METRICS_FILE.name}` is added.")
 
-# Model figures 
+# Model figures
 st.subheader("Model Figures")
 f1, f2 = st.columns(2)
 with f1:
@@ -95,24 +94,24 @@ with f2:
     else:
         st.info("Learning curves not found in `docs/figures/`.")
 
-# Prediction history 
+# Prediction history
 st.subheader("Prediction History")
 history = load_history()
-if history is None:
+if not history:
     h1, h2 = st.columns(2)
     h1.metric("Total Predictions", 0)
     h2.metric("Classes Seen", 0)
     st.info("No predictions yet. Class counts will appear here once images "
             "have been classified.")
-elif HISTORY_CLASS_COLUMN not in history.columns:
-    st.error(f"The history file has no column named `{HISTORY_CLASS_COLUMN}`. "
-             f"Columns found: {', '.join(map(str, history.columns))}. "
-             "Update HISTORY_CLASS_COLUMN at the top of dashboard.py.")
 else:
-    counts = history[HISTORY_CLASS_COLUMN].value_counts()
-    counts.index = [pretty(c) for c in counts.index]
+    labels = [
+        pretty(label)
+        for record in history
+        for label in record.get("labels", [])
+    ]
+    counts = pd.Series(labels, dtype="string").value_counts()
     h1, h2 = st.columns(2)
-    h1.metric("Total Predictions", f"{len(history):,}")
+    h1.metric("Total Predictions", f"{len(labels):,}")
     h2.metric("Classes Seen", len(counts))
     st.markdown("**Predictions per class**")
     st.bar_chart(counts)
