@@ -44,3 +44,24 @@ the test result (accuracy 0.609, macro F1 0.652, open manhole 9 of 11), the Grad
 - Change one thing at a time, then bump the version (`_v2`, `_v3`).
 - Never overwrite an old run. Old runs are evidence for the paper.
 - Write down *why* you made each change in Notes.
+
+# yolo_v1 Testing
+Final YOLO model: yolo_v1, best.pt (epoch 81), chosen on validation mAP50-95 0.312. Test set evaluated once.
+
+YOLO11s summary (fused): 100 layers, 9,414,735 parameters, 0 gradients, 21.4 GFLOPs
+val: Fast image access ✅ (ping: 0.0±0.0 ms, read: 1553.7±316.6 MB/s, size: 52.4 KB)
+val: Scanning /content/yolo_data/labels/test.cache... 184 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 184/184 70.2Mit/s 0.0s
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 12/12 3.4it/s 3.5s
+                   all        184        325      0.465      0.388      0.364      0.226
+Speed: 1.8ms preprocess, 10.7ms inference, 0.0ms loss, 1.2ms postprocess per image
+Results saved to /content/runs/detect/val-2
+TEST mAP50: 0.364 | mAP50-95: 0.226 | precision: 0.465 | recall: 0.388
+                      test boxes  precision  recall   AP50  AP50-95
+class                                                              
+crack                         67      0.255   0.090  0.071    0.029
+damaged_asphalt              104      0.360   0.259  0.210    0.100
+open_manhole                  11      0.861   0.636  0.696    0.499
+pothole                       62      0.290   0.323  0.254    0.148
+water-filled_pothole          81      0.559   0.630  0.591    0.356
+
+| yolo_v1 | [October 19, 2026] | [Mary Ruth Cathryn] | YOLO11s, pretrained | imgsz 640, batch 16, seed 42, 100 epochs (best epoch 81) | val mAP50 0.467 / mAP50-95 0.312 | test mAP50 0.364 / mAP50-95 0.226 | test | Final YOLO model, chosen on validation. Test run once. Crack recall 0.09. Open manhole: 11 test boxes. |
