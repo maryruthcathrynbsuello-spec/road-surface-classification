@@ -6,6 +6,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Model Performance", layout="wide")
 
+
 ROOT = Path(__file__).resolve().parents[2]
 FIG_DIR = ROOT / "docs" / "figures"
 REPORT_DIR = ROOT / "docs" / "data_reports"
@@ -43,6 +44,7 @@ def waiting(what, hint):
 
 metrics = load_metrics()
 
+# Header 
 st.title("Model Performance")
 st.caption(f"Results of the chosen model ({MODEL_NAME}) on unseen test images.")
 
@@ -53,6 +55,7 @@ if metrics is None:
         "Figures are loaded separately from `docs/figures/`."
     )
 
+#  1. Headline numbers
 st.subheader("1. Headline Numbers (Test Set)")
 h1, h2, h3 = st.columns(3)
 if metrics:
@@ -68,6 +71,7 @@ else:
 st.caption("These numbers come from the test set: images the model never saw "
            "during training or tuning.")
 
+#  2. Per-class table
 st.subheader("2. Per-Class Results")
 if metrics and metrics.get("per_class"):
     df = pd.DataFrame(metrics["per_class"]).T
@@ -87,6 +91,7 @@ else:
     waiting("The per-class table", "It needs precision, recall, F1 and the "
             "number of test images per class in the metrics file.")
 
+# 3. Confusion matrix
 st.subheader("3. Confusion Matrix")
 left, right = st.columns([3, 2])
 with left:
@@ -107,6 +112,7 @@ with right:
         "- A low diagonal value means the model often misses that class."
     )
 
+#  4. Model comparison 
 st.subheader("4. Model Comparison (Validation Scores)")
 comparison = metrics.get("comparison") if metrics else None
 if comparison:
@@ -120,7 +126,7 @@ if comparison:
 else:
     waiting("The model comparison", "Add a `comparison` entry (Baseline CNN, "
             "MobileNetV2, EfficientNetB0 validation scores) to the metrics file.")
-
+# 5. Learning curve
 st.subheader("5. Learning Curves (Chosen Model)")
 curves = find_figure(f"{MODEL_NAME}*curve*.png", f"{MODEL_NAME}*history*.png",
                      "*learning_curve*.png", "*training_curve*.png")
@@ -133,18 +139,67 @@ else:
     waiting("The learning curves", "Save the accuracy/loss figure to "
             f"`docs/figures/` as `{MODEL_NAME}_curves.png`.")
 
+#6. Grad-CAM 
 st.subheader("6. Grad-CAM Examples")
+
+
+def show_cams(paths):
+    cols = st.columns(3)
+    for i, path in enumerate(paths):
+        label = path.stem.replace("gradcam_", "", 1).replace("_", " ")
+        with cols[i % 3]:
+            st.image(str(path), caption=label)
+
+
 cams = sorted(FIG_DIR.glob("gradcam*.png"))
 if cams:
-    cols = st.columns(min(3, len(cams)))
-    for i, path in enumerate(cams[:6]):
-        with cols[i % len(cols)]:
-            st.image(str(path), caption=path.stem.replace("_", " "))
+    correct = [p for p in cams if p.stem.endswith("_correct")]
+    wrong = [p for p in cams if "_predicted_as_" in p.stem]
+    other = [p for p in cams if p not in correct and p not in wrong]
+
+    if correct:
+        st.markdown("**Correct predictions**")
+        show_cams(correct)
+    if wrong:
+        st.markdown("**Wrong predictions**")
+        show_cams(wrong)
+    if other:
+        st.markdown("**Other examples**")
+        show_cams(other)
+    st.caption("The highlighted areas show where the model looked when it made "
+               "its decision. Wrong predictions help explain which classes "
+               "get confused.")
 else:
     waiting("Grad-CAM examples", "Save images named `gradcam_*.png` in "
             "`docs/figures/`. Include some wrong predictions.")
 
-st.subheader("7. Limitations")
+# 7. YOLO 
+st.subheader("7. YOLO Detection")
+yolo_figs = sorted(FIG_DIR.glob("yolo*.png"))
+yolo_metrics_file = REPORT_DIR / "yolo_metrics.json"
+if yolo_figs or yolo_metrics_file.exists():
+    if yolo_metrics_file.exists():
+        try:
+            ym = json.loads(yolo_metrics_file.read_text(encoding="utf-8"))
+            if "validation" in ym:
+                st.markdown("**Validation**")
+                st.dataframe(pd.DataFrame(ym["validation"]).T.round(3))
+            if "test_map" in ym:
+                st.metric("YOLO test mAP", f"{ym['test_map']:.3f}")
+        except json.JSONDecodeError as e:
+            st.error(f"Could not read yolo_metrics.json: {e}")
+    cols = st.columns(2)
+    for i, path in enumerate(yolo_figs):
+        with cols[i % 2]:
+            st.image(str(path), caption=path.stem.replace("_", " "))
+else:
+    st.info("YOLO results are not available yet. Training curves, PR curve, "
+            "confusion matrix and the validation table will appear here once "
+            "`yolo_*.png` figures and `yolo_metrics.json` are added. "
+            "Test mAP is shown only after the test run.")
+
+# 8. Limitations 
+st.subheader("8. Limitations")
 st.info(
     "- The **normal road** class was generated from unlabeled areas of the "
     "dataset images, so it may not represent all normal roads.\n"
