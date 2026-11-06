@@ -60,7 +60,10 @@ df = pd.DataFrame(
     {
         "Time": [record["time"] for record in filtered],
         "File": [record["file_name"] for record in filtered],
-        "Detections": [record["detections"] for record in filtered],
+        "Confidence": [
+            f"{record['confidence']:.1f}%" if record.get("confidence") is not None else ""
+            for record in filtered
+        ],
         "Labels": [", ".join(record["labels"]) for record in filtered],
         "Status": [record["status"] for record in filtered],
     }

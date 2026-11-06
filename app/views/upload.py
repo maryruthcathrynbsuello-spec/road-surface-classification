@@ -45,7 +45,7 @@ def save_history(images, results):
                 "id": uuid.uuid4().hex,
                 "time": now,
                 "file_name": item["name"],
-                "detections": 1,
+                "confidence": round(conf, 1),
                 "labels": [label],
                 "status": "Needs review" if conf < LOW_CONFIDENCE else "OK",
             }
