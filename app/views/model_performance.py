@@ -144,31 +144,7 @@ else:
     waiting("Grad-CAM examples", "Save images named `gradcam_*.png` in "
             "`docs/figures/`. Include some wrong predictions.")
 
-st.subheader("7. YOLO Detection")
-yolo_figs = sorted(FIG_DIR.glob("yolo*.png"))
-yolo_metrics_file = REPORT_DIR / "yolo_metrics.json"
-if yolo_figs or yolo_metrics_file.exists():
-    if yolo_metrics_file.exists():
-        try:
-            ym = json.loads(yolo_metrics_file.read_text(encoding="utf-8"))
-            if "validation" in ym:
-                st.markdown("**Validation**")
-                st.dataframe(pd.DataFrame(ym["validation"]).T.round(3))
-            if "test_map" in ym:
-                st.metric("YOLO test mAP", f"{ym['test_map']:.3f}")
-        except json.JSONDecodeError as e:
-            st.error(f"Could not read yolo_metrics.json: {e}")
-    cols = st.columns(2)
-    for i, path in enumerate(yolo_figs):
-        with cols[i % 2]:
-            st.image(str(path), caption=path.stem.replace("_", " "))
-else:
-    st.info("YOLO results are not available yet. Training curves, PR curve, "
-            "confusion matrix and the validation table will appear here once "
-            "`yolo_*.png` figures and `yolo_metrics.json` are added. "
-            "Test mAP is shown only after the test run.")
-
-st.subheader("8. Limitations")
+st.subheader("7. Limitations")
 st.info(
     "- The **normal road** class was generated from unlabeled areas of the "
     "dataset images, so it may not represent all normal roads.\n"

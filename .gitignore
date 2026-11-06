@@ -12,7 +12,6 @@ app/models/*
 !app/models/README.md
 
 # datasets and local files
-yolo_data/
 processed/
 .venv/
 __pycache__/

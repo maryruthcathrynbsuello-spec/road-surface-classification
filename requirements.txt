@@ -12,7 +12,7 @@ tqdm
 jupyter
 nbstripout
 streamlit
-ultralytics==8.4.182
+opencv-python-headless
 tensorflow==<version from 3.1>
 keras==<version from 3.1>
 pandas
