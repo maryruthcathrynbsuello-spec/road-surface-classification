@@ -1,0 +1,30 @@
+{
+  "class_names": [
+    "crack",
+    "damaged_asphalt",
+    "normal",
+    "open_manhole",
+    "pothole",
+    "water-filled_pothole"
+  ],
+  "class_weights": {
+    "0": 0.9307944307944308,
+    "1": 0.6241076331685886,
+    "2": 1.0917387127761768,
+    "3": 9.01984126984127,
+    "4": 0.8570889894419306,
+    "5": 0.8851246105919003
+  },
+  "img_size": 224,
+  "split": [
+    0.7,
+    0.15,
+    0.15
+  ],
+  "seed": 42,
+  "phash_threshold": 4,
+  "pad_to_square": false,
+  "label_source": "coco_regions_cropped",
+  "split_by": "source_photo_group",
+  "normal_class": "generated_from_unlabeled_areas"
+}

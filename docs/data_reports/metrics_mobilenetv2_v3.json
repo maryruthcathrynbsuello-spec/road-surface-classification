@@ -1,0 +1,21 @@
+{
+  "run": "mobilenetv2_v3",
+  "val_accuracy": 0.5752212389380531,
+  "val_macro_f1": 0.5978966663030237,
+  "per_class_f1": {
+    "crack": 0.6746031746031746,
+    "damaged_asphalt": 0.4845360824742268,
+    "normal": 0.5,
+    "open_manhole": 0.8,
+    "pothole": 0.3875,
+    "water-filled_pothole": 0.7407407407407407
+  },
+  "backbone": "mobilenetv2",
+  "epochs_head": 15,
+  "epochs_fine": 10,
+  "params": 2265670,
+  "lr_head": 0.001,
+  "lr_fine": 1e-05,
+  "fine_tune_layers": 30,
+  "batch_size": 32
+}
