@@ -1,1 +1,142 @@
-[]
+[
+  {
+    "id": "7be92ca3e2d349ef96782a7883b8f877",
+    "time": "2026-11-07 23:26:03",
+    "file_name": "pothole_test.jpg",
+    "confidence": 74.4,
+    "labels": [
+      "pothole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "64a3d7f353954b8e8bfe78df9ff59010",
+    "time": "2026-11-07 23:26:03",
+    "file_name": "open-manhole_test.jpg",
+    "confidence": 100.0,
+    "labels": [
+      "open_manhole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "03531f004f9d47deb1d32a031f996ab6",
+    "time": "2026-11-07 23:26:03",
+    "file_name": "blurredPhoto_test.jpg",
+    "confidence": 44.4,
+    "labels": [
+      "Not recognized"
+    ],
+    "status": "Needs review"
+  },
+  {
+    "id": "74ffa871be2042d88c8d62a178caf713",
+    "time": "2026-11-07 23:26:03",
+    "file_name": "unrelatedPhoto_test.jpg",
+    "confidence": 42.4,
+    "labels": [
+      "Not recognized"
+    ],
+    "status": "Needs review"
+  },
+  {
+    "id": "0541cefae0e0470191ab2cef950f79de",
+    "time": "2026-11-07 23:33:17",
+    "file_name": "water-filled-pothole_test (for test 2).jpg",
+    "confidence": 96.9,
+    "labels": [
+      "water-filled_pothole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "8b78e6273a1c444ea0ee5b99d04e335b",
+    "time": "2026-11-07 23:33:17",
+    "file_name": "open-manhole_test(2).jpg",
+    "confidence": 99.9,
+    "labels": [
+      "open_manhole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "86041d560abd409c8375db0693c62867",
+    "time": "2026-11-07 23:34:35",
+    "file_name": "water-filled-pothole_test (for test 2).jpg",
+    "confidence": 96.9,
+    "labels": [
+      "water-filled_pothole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "f8245a91220141dcaa7b6e78c9b0cb78",
+    "time": "2026-11-07 23:34:35",
+    "file_name": "open-manhole_test(2).jpg",
+    "confidence": 99.9,
+    "labels": [
+      "open_manhole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "973c5823c3664d558d691db443dfc2d1",
+    "time": "2026-11-07 23:41:34",
+    "file_name": "water-filled-pothole_test (for test 2).jpg",
+    "confidence": 96.9,
+    "labels": [
+      "water-filled_pothole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "5fba4903442c4908b3c4e91f1812c9b6",
+    "time": "2026-11-07 23:41:34",
+    "file_name": "open-manhole_test(2).jpg",
+    "confidence": 99.9,
+    "labels": [
+      "open_manhole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "b424cab29d054cc682f595f88a099bfc",
+    "time": "2026-11-07 23:41:34",
+    "file_name": "pothole_test (2).JPG",
+    "confidence": 56.7,
+    "labels": [
+      "Not recognized"
+    ],
+    "status": "Needs review"
+  },
+  {
+    "id": "41d499059af449f482defecf406a6fb5",
+    "time": "2026-11-07 23:41:34",
+    "file_name": "damaged_asphalt_test (for test 2).jpg",
+    "confidence": 61.2,
+    "labels": [
+      "water-filled_pothole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "c64305cb29e14f2f9ec835935cee7ca6",
+    "time": "2026-11-07 23:41:34",
+    "file_name": "crack_test (for test 2).jpg",
+    "confidence": 94.7,
+    "labels": [
+      "crack"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "fa0f89b6378b4ce19be33968f3368220",
+    "time": "2026-11-07 23:47:09",
+    "file_name": "pothole_test (2).JPG",
+    "confidence": 50.3,
+    "labels": [
+      "Not recognized"
+    ],
+    "status": "Needs review"
+  }
+]

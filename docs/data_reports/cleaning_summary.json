@@ -1,0 +1,21 @@
+{
+  "images_in_coco": 3154,
+  "distinct_photo_groups": 1249,
+  "labeled_regions": 6304,
+  "regions_too_small": 715,
+  "normal_road_crops_generated": 820,
+  "final_crops": 5382,
+  "per_split": {
+    "train": 4546,
+    "val": 452,
+    "test": 384
+  },
+  "per_class": {
+    "damaged asphalt": 1431,
+    "pothole": 1014,
+    "water-filled pothole": 1014,
+    "crack": 999,
+    "normal": 820,
+    "open manhole": 104
+  }
+}
