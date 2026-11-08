@@ -21,9 +21,9 @@ Mendeley Data: https://data.mendeley.com/datasets/c43y93xswd/1
 |---|---|---|---|
 | 0 | Data understanding | `notebooks/01_data_cleaning.ipynb` | Ready |
 | 1 | Cleaning (CV): corrupt files, duplicates, quality flags, split, resize | `notebooks/01_data_cleaning.ipynb` | Ready |
-| 2 | Algorithm: baseline CNN + transfer learning (MobileNetV2 / EfficientNetB0) | `notebooks/02_*`, `03_*` | To do |
-| 3 | Training, testing, evaluation, Grad-CAM | same notebooks | To do |
-| 4 | Results system (Streamlit app) | `app/` | To do |
+| 2 | Algorithm: baseline CNN + transfer learning (MobileNetV2 / EfficientNetB0) | `notebooks/02_*`, `03_*` | Done |
+| 3 | Training, testing, evaluation, Grad-CAM | same notebooks | Done |
+| 4 | Results system (Streamlit app, CNN image classifier) | `app/` | In progress |
 
 Textbook mapping (Data Processing Chain / DW architecture):
 data source -> transformation (cleaning) -> data mart (split folders) -> data mining (CNN) -> visualization (app).
@@ -68,12 +68,16 @@ road-surface-classification/
 | _Name 4_ | Documentation / paper | `docs/*` |
 
 ## Results
-_To be filled after Stage 3._
+Validation set (452 crops) unless noted. The test set (384 crops) was used once, for the final model only. Expect about ±3 points of uncertainty on validation accuracy and about ±5 on test.
 
 | Model | Accuracy | Macro F1 | Notes |
 |---|---|---|---|
-| Baseline CNN | | | |
-| MobileNetV2 | | | |
+| Baseline CNN (validation) | 0.325 | 0.339 | Underfitting. The normal class was almost never predicted. |
+| MobileNetV2, fine-tuned (validation) | 0.575 | 0.598 | |
+| EfficientNetB0, fine-tuned (validation) | 0.628 | 0.646 | Chosen model |
+| **EfficientNetB0 (test)** | **0.609** | **0.652** | Final result. Open manhole: 9 of 11 found. |
+
+An earlier split that did not keep copies of one photo together gave near-perfect scores. Those runs are invalid, and all numbers above come from the corrected split.
 
 ## Streamlit Setup Guide
 
@@ -126,17 +130,22 @@ pip install streamlit
 
 Important: Make sure .venv is activated before installing packages or running the application.
 
-4. Run the Streamlit Application
+4. Install the project requirements and add the model file
+
+With .venv activated, from the project directory:
+
+pip install -r requirements.txt
+
+Use Python 3.10 to 3.13. TensorFlow does not officially support Python 3.14.
+
+The trained model is not stored in Git. Put efficientnetb0_v2.keras in app/models/ (ask the team for the shared Drive link).
+app/models/preprocessing_config.json is already in the repository.
+
+5. Run the Streamlit Application
 
 From the project directory, navigate to the app folder:
 
 cd app
-
-Then navigate to the specific folder you are working on.
-
-For example, if you are working on the dashboard folder:
-
-cd dashboard
 
 Run the Streamlit application:
 
@@ -145,7 +154,6 @@ streamlit run main.py
 The complete command sequence will look like:
 
 cd app
-cd dashboard
 streamlit run main.py
 
 Streamlit will provide a local URL in the terminal, usually:
@@ -164,15 +172,15 @@ cd [PROJECT_FOLDER]
 python -m venv .venv
 .venv\Scripts\activate
 
-pip install streamlit
+pip install -r requirements.txt
 
 cd app
-cd dashboard
 
 streamlit run main.py
 Notes
 Always activate .venv before running the application.
-Replace dashboard with the folder you are currently working on.
+Use Python 3.10 to 3.13 (TensorFlow does not officially support 3.14).
+Put efficientnetb0_v2.keras in app/models/ first. It is not stored in Git.
 Replace [REPOSITORY_URL] and [PROJECT_FOLDER] with the actual repository information.
 To leave the virtual environment, use:
 deactivate
