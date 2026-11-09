@@ -6,14 +6,14 @@ def render_sidebar():
         st.Page(
             "views/dashboard.py", 
             title="Dashboard", 
-            icon=":material/info:",
+            icon=":material/dashboard:",
             default=True
         ),
 
         st.Page(
             "views/about.py", 
             title="About", 
-            icon=":material/dashboard:"
+            icon=":material/info:"
         ),
 
         st.Page(
