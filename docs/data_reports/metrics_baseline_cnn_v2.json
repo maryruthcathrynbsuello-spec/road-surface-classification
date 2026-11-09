@@ -1,0 +1,17 @@
+{
+  "run": "baseline_cnn_v2",
+  "val_accuracy": 0.3252212389380531,
+  "val_macro_f1": 0.3392635729522175,
+  "per_class_f1": {
+    "crack": 0.398576512455516,
+    "damaged_asphalt": 0.2233502538071066,
+    "normal": 0.028985507246376812,
+    "open_manhole": 0.6956521739130435,
+    "pothole": 0.28125,
+    "water-filled_pothole": 0.4077669902912621
+  },
+  "epochs_run": 40,
+  "params": 423526,
+  "learning_rate": 0.001,
+  "batch_size": 32
+}

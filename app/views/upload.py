@@ -1,11 +1,16 @@
 import io
 import json
+import sys
 import uuid
 from datetime import datetime
 from pathlib import Path
 
 import streamlit as st
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, ImageOps
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))   # app/ folder, so `utils` can be imported
+from utils.inference import (DEFAULT_THRESHOLD, MAX_FILE_MB, load_model, missing_files,
+                             predict, pretty, validate_upload)
 
 HISTORY_FILE = Path(__file__).with_name("history.json")  # same file history.py reads
 
@@ -14,22 +19,20 @@ st.set_page_config(
     layout="wide",
 )
 
-LOW_CONFIDENCE = 60.0  # below this, ask for a clearer photo
-
 ACTIONS = {
-    "POTHOLE": "Consider reporting this to your local roads authority.",
+    "pothole": "Consider reporting this to your local roads authority.",
+    "water-filled_pothole": "The depth is hidden by the water. Treat it like a pothole and consider reporting it.",
+    "open_manhole": "An open manhole is a safety hazard. Report it promptly.",
+    "crack": "Cracks can be monitored. Report them if they are wide or spreading.",
+    "damaged_asphalt": "Consider reporting damaged pavement to your local roads authority.",
+    "normal": "No defect recognized in this photo.",
 }
 DEFAULT_ACTION = "No specific action suggested for this result."
 
 # ---------- State ----------
 st.session_state.setdefault("images", [])     # classified images: [{"name", "bytes"}]
-st.session_state.setdefault("results", None)  # list of (label, confidence) or None
+st.session_state.setdefault("results", None)  # list of predict() result dicts, or None
 st.session_state.setdefault("uploader_key", 0)
-
-
-def classify(image: Image.Image):
-    """TODO: replace with your real model. Return (label, confidence_percent)."""
-    return "POTHOLE", 94.2
 
 
 def save_history(images, results):
@@ -39,15 +42,15 @@ def save_history(images, results):
     except (FileNotFoundError, json.JSONDecodeError):
         history = []
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    for item, (label, conf) in zip(images, results):
+    for item, r in zip(images, results):
         history.append(
             {
                 "id": uuid.uuid4().hex,
                 "time": now,
                 "file_name": item["name"],
-                "detections": 1,
-                "labels": [label],
-                "status": "Needs review" if conf < LOW_CONFIDENCE else "OK",
+                "confidence": round(r["confidence"], 1),
+                "labels": [r["label"]],
+                "status": "OK" if r["recognized"] else "Needs review",
             }
         )
     HISTORY_FILE.write_text(json.dumps(history, indent=2))
@@ -60,7 +63,7 @@ def reset():
 
 
 def load_image(data: bytes) -> Image.Image:
-    return Image.open(io.BytesIO(data)).convert("RGB")
+    return ImageOps.exif_transpose(Image.open(io.BytesIO(data))).convert("RGB")
 
 
 def show_grid(images):
@@ -98,12 +101,22 @@ def dropzone_css(has_files: bool):
 with st.sidebar:
     st.header("About")
     st.write("Classifies the condition of road surfaces from photos.")
-    st.caption("Supported formats: JPG, JPEG, PNG")
+    st.caption(f"Supported formats: JPG, JPEG, PNG (max {MAX_FILE_MB} MB each)")
     st.caption("Results are estimates and should not replace a professional inspection.")
+    st.header("Settings")
+    threshold = st.slider("Confidence threshold", 0.10, 0.95, DEFAULT_THRESHOLD, 0.05,
+                          help="Below this confidence the app answers 'Not recognized' instead of a label.")
+
+# ---------- Model files must exist ----------
+missing = missing_files()
+if missing:
+    st.error("Model files not found. Copy them to app/models/ and reload:\n\n" + "\n".join(f"- {m}" for m in missing))
+    st.stop()
 
 # ---------- Header ----------
 st.title("Road Surface Classifier")
 st.write("Upload one or more images of road surfaces to classify their condition.")
+st.caption("Works best on a close-up of one road area. A photo with several different defects gets one label.")
 
 # ---------- Main layout (same two columns at every stage) ----------
 left, right = st.columns([3, 2], border=True)
@@ -120,19 +133,18 @@ with left:
             key=f"uploader_{st.session_state.uploader_key}",
         )
 
-        images, skipped = [], []
+        images, errors = [], []
         for f in uploaded_files or []:
             data = f.getvalue()
-            try:
-                Image.open(io.BytesIO(data)).load()  # fails here if corrupt
-            except (UnidentifiedImageError, OSError):
-                skipped.append(f.name)
+            _, error = validate_upload(f.name, data)   # type, size, corrupted or non-image checks
+            if error:
+                errors.append(error)
             else:
                 images.append({"name": f.name, "bytes": data})
 
         dropzone_css(has_files=bool(images))
-        if skipped:
-            st.warning("Skipped unreadable file(s): " + ", ".join(skipped))
+        for error in errors:
+            st.error(error)
         show_grid(images)
     else:
         images = st.session_state.images
@@ -162,10 +174,12 @@ with right:
         st.caption("You can keep adding more images on the left.")
 
         if st.button("Classify Images", use_container_width=True):
+            with st.spinner("Loading the model (first run only)..."):
+                bundle = load_model()                        # cached: loaded once, reused afterwards
             results = []
             progress = st.progress(0.0, text="Analyzing road surfaces...")
             for i, item in enumerate(images, start=1):
-                results.append(classify(load_image(item["bytes"])))
+                results.append(predict(load_image(item["bytes"]), threshold=threshold, bundle=bundle))
                 progress.progress(i / n, text=f"Analyzing {i} of {n}...")
 
             # Save to persistent history (shown on the History tab)
@@ -180,19 +194,25 @@ with right:
     else:
         st.caption("Classification Results")
 
-        for item, (label, confidence) in zip(
-            st.session_state.images, st.session_state.results
-        ):
+        for item, r in zip(st.session_state.images, st.session_state.results):
             with st.container(border=True):
                 st.caption(item["name"])
-                st.subheader(label)
-                st.write(f"Confidence: **{confidence:.1f}%**")
-                st.progress(min(max(confidence / 100, 0.0), 1.0))
-
-                if confidence < LOW_CONFIDENCE:
-                    st.warning("Not sure. Try a clearer, well-lit photo.")
+                if r["recognized"]:
+                    st.subheader(pretty(r["label"]).upper())
                 else:
-                    st.caption(ACTIONS.get(label, DEFAULT_ACTION))
+                    st.subheader("NOT RECOGNIZED")
+                st.write(f"Confidence: **{r['confidence']:.1f}%**")
+                st.progress(min(max(r["confidence"] / 100, 0.0), 1.0))
+
+                if r["recognized"]:
+                    st.caption(ACTIONS.get(r["label"], DEFAULT_ACTION))
+                else:
+                    st.warning(f"Not sure (best guess: {pretty(r['best_guess'])}, below the "
+                               f"{r['threshold']:.0f}% threshold). Try a clearer, well-lit close-up.")
+
+                st.write("**Top 3**")
+                for name, pct in r["top3"]:
+                    st.write(f"{pretty(name)}: {pct:.1f}%")
 
         st.button("Upload More Images", on_click=reset, use_container_width=True)
 
