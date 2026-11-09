@@ -13,6 +13,7 @@ from utils.inference import (DEFAULT_THRESHOLD, MAX_FILE_MB, load_model, missing
                              predict, pretty, validate_upload)
 
 HISTORY_FILE = Path(__file__).with_name("history.json")  # same file history.py reads
+IMAGES_DIR = HISTORY_FILE.with_name("history_images")    # saved copies of uploaded images
 
 # ---------- Page setup ----------
 st.set_page_config(
@@ -36,21 +37,32 @@ st.session_state.setdefault("uploader_key", 0)
 
 
 def save_history(images, results):
-    """Append one history row per image to history.json (survives refresh)."""
+    """Append one history row per image to history.json and keep a copy of each image."""
     try:
         history = json.loads(HISTORY_FILE.read_text())
     except (FileNotFoundError, json.JSONDecodeError):
         history = []
+    IMAGES_DIR.mkdir(exist_ok=True)
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     for item, r in zip(images, results):
+        record_id = uuid.uuid4().hex
+        image_file = f"{record_id}{Path(item['name']).suffix.lower() or '.jpg'}"
+        (IMAGES_DIR / image_file).write_bytes(item["bytes"])
         history.append(
             {
-                "id": uuid.uuid4().hex,
+                "id": record_id,
                 "time": now,
                 "file_name": item["name"],
                 "confidence": round(r["confidence"], 1),
                 "labels": [r["label"]],
                 "status": "OK" if r["recognized"] else "Needs review",
+                # extra details for the History pop-up
+                "image": image_file,
+                "recognized": r["recognized"],
+                "best_guess": r["best_guess"],
+                "threshold": r["threshold"],
+                "top3": [[name, round(pct, 1)] for name, pct in r["top3"]],
+                "action": ACTIONS.get(r["label"], DEFAULT_ACTION) if r["recognized"] else None,
             }
         )
     HISTORY_FILE.write_text(json.dumps(history, indent=2))
