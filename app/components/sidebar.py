@@ -11,6 +11,12 @@ def render_sidebar():
         ),
 
         st.Page(
+            "views/about.py", 
+            title="About", 
+            icon=":material/info:"
+        ),
+
+        st.Page(
             "views/dataset_overview.py", 
             title="Dataset Overview",
             icon=":material/dataset:"
