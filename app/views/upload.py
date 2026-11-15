@@ -34,6 +34,8 @@ DEFAULT_ACTION = "No specific action suggested for this result."
 st.session_state.setdefault("images", [])     # classified images: [{"name", "bytes"}]
 st.session_state.setdefault("results", None)  # list of predict() result dicts, or None
 st.session_state.setdefault("uploader_key", 0)
+st.session_state.setdefault("threshold", DEFAULT_THRESHOLD)  # edited on the Settings tab
+st.session_state.setdefault("show_top3", True)  # edited on the Settings tab
 
 
 def save_history(images, results):
@@ -115,9 +117,9 @@ with st.sidebar:
     st.write("Classifies the condition of road surfaces from photos.")
     st.caption(f"Supported formats: JPG, JPEG, PNG (max {MAX_FILE_MB} MB each)")
     st.caption("Results are estimates and should not replace a professional inspection.")
-    st.header("Settings")
-    threshold = st.slider("Confidence threshold", 0.10, 0.95, DEFAULT_THRESHOLD, 0.05,
-                          help="Below this confidence the app answers 'Not recognized' instead of a label.")
+
+# Confidence threshold now comes from the Settings tab
+threshold = st.session_state.threshold
 
 # ---------- Model files must exist ----------
 missing = missing_files()
@@ -222,9 +224,10 @@ with right:
                     st.warning(f"Not sure (best guess: {pretty(r['best_guess'])}, below the "
                                f"{r['threshold']:.0f}% threshold). Try a clearer, well-lit close-up.")
 
-                st.write("**Top 3**")
-                for name, pct in r["top3"]:
-                    st.write(f"{pretty(name)}: {pct:.1f}%")
+                if st.session_state.show_top3:
+                    st.write("**Top 3**")
+                    for name, pct in r["top3"]:
+                        st.write(f"{pretty(name)}: {pct:.1f}%")
 
         st.button("Upload More Images", on_click=reset, use_container_width=True)
 
