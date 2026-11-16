@@ -39,6 +39,8 @@ st.session_state.setdefault("results", None)      # list of predict() result dic
 st.session_state.setdefault("uploader_key", 0)
 st.session_state.setdefault("adding", False)      # True while the user is adding more images
 st.session_state.setdefault("upload_errors", [])  # validation errors from the last upload
+st.session_state.setdefault("threshold", DEFAULT_THRESHOLD)
+st.session_state.setdefault("show_top3", True)
 
 
 def save_history(images, results):
@@ -178,9 +180,10 @@ def view_result(index: int):
             st.warning(f"Not sure (best guess: {pretty(r['best_guess'])}, below the "
                        f"{r['threshold']:.0f}% threshold). Try a clearer, well-lit close-up.")
 
-        st.write("**Top 3**")
-        for name, pct in r["top3"]:
-            st.write(f"{pretty(name)}: {pct:.1f}%")
+        if st.session_state.show_top3:
+            st.write("**Top 3**")
+            for name, pct in r["top3"]:
+                st.write(f"{pretty(name)}: {pct:.1f}%")
 
 
 def short_name(name: str, limit: int = 18) -> str:
@@ -403,7 +406,11 @@ elif step == "classify":
         results = []
         progress = st.progress(0.0, text="Analyzing road surfaces...")
         for i, item in enumerate(images, start=1):
-            results.append(predict(load_image(item["bytes"]), threshold=DEFAULT_THRESHOLD, bundle=bundle))
+            results.append(predict(
+                load_image(item["bytes"]),
+                threshold=st.session_state.threshold,
+                bundle=bundle,
+            ))
             progress.progress(i / n, text=f"Analyzing {i} of {n}...")
 
         # Save to persistent history (shown on the History tab)
