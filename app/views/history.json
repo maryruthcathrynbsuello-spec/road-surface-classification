@@ -138,5 +138,84 @@
       "Not recognized"
     ],
     "status": "Needs review"
+  },
+  {
+    "id": "08704b361e024b05a2c8a7f54cb7c951",
+    "time": "2026-11-08 20:04:25",
+    "file_name": "water-filled-pothole_test (for test 2).jpg",
+    "confidence": 96.9,
+    "labels": [
+      "water-filled_pothole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "494393c13f2740d8bb20b80762264c8a",
+    "time": "2026-11-08 20:04:25",
+    "file_name": "pothole_test (2).JPG",
+    "confidence": 50.3,
+    "labels": [
+      "Not recognized"
+    ],
+    "status": "Needs review"
+  },
+  {
+    "id": "36c982f5b78d4e33bdc041a99938209d",
+    "time": "2026-11-08 20:04:25",
+    "file_name": "open-manhole_test(2).jpg",
+    "confidence": 99.9,
+    "labels": [
+      "open_manhole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "cc72fe4bbd6d46f1b5ac16a23c45a4af",
+    "time": "2026-11-08 20:04:25",
+    "file_name": "damaged_asphalt_test (for test 2).jpg",
+    "confidence": 61.2,
+    "labels": [
+      "water-filled_pothole"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "0e938c8cb2484937bb928fed760f9c94",
+    "time": "2026-11-08 20:04:25",
+    "file_name": "crack_test (for test 2).jpg",
+    "confidence": 94.7,
+    "labels": [
+      "crack"
+    ],
+    "status": "OK"
+  },
+  {
+    "id": "f95601e96d1a4307973260a690e0cffd",
+    "time": "2026-11-10 23:57:08",
+    "file_name": "open-manhole_test(2).jpg",
+    "confidence": 99.9,
+    "labels": [
+      "open_manhole"
+    ],
+    "status": "OK",
+    "image": "f95601e96d1a4307973260a690e0cffd.jpg",
+    "recognized": true,
+    "best_guess": "open_manhole",
+    "threshold": 60.0,
+    "top3": [
+      [
+        "open_manhole",
+        99.9
+      ],
+      [
+        "water-filled_pothole",
+        0.0
+      ],
+      [
+        "normal",
+        0.0
+      ]
+    ],
+    "action": "An open manhole is a safety hazard. Report it promptly."
   }
 ]
