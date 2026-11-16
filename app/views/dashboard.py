@@ -1,117 +1,138 @@
-import json
+import sys
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(page_title="Dashboard", layout="wide")
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+from utils.results_loader import (  
+    HISTORY_FILE, MODEL_NAME, comparison_table, find_figure, load_prediction_history,
+    metrics_path, model_label, pretty, summary,
+)
 
-ROOT = Path(__file__).resolve().parents[2]
-FIG_DIR = ROOT / "docs" / "figures"
-REPORT_DIR = ROOT / "docs" / "data_reports"
+try:
+    st.set_page_config(page_title="Dashboard", layout="wide")
+except Exception:
+    pass  
 
-MODEL_NAME = "efficientnetb0_v2"
-METRICS_FILE = REPORT_DIR / f"{MODEL_NAME}_metrics.json"
-
-
-HISTORY_FILE = Path(__file__).with_name("history.json")
-
-
-def pretty(name):
-    return str(name).replace("_", " ")
+main = summary(metrics_path(), "test")
+chosen_label = model_label(metrics_path().stem)
 
 
-def find_figure(*patterns):
-    for pattern in patterns:
-        matches = sorted(FIG_DIR.glob(pattern))
-        if matches:
-            return matches[0]
-    return None
-
-
-def load_metrics():
-    if not METRICS_FILE.exists():
-        return None
-    try:
-        return json.loads(METRICS_FILE.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as e:
-        st.error(f"Could not read {METRICS_FILE.name}: {e}")
-        return None
-
-
-def load_history():
-    """Return saved upload records, or None if no predictions are available."""
-    if not HISTORY_FILE.exists():
-        return None
-    try:
-        records = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as e:
-        st.error(f"Could not read {HISTORY_FILE.name}: {e}")
-        return None
-    if not isinstance(records, list):
-        st.error(f"Expected {HISTORY_FILE.name} to contain a list of records.")
-        return None
-    return records or None
-
-
-metrics = load_metrics()
-
-# Header
 st.title("Road Surface Condition Dashboard")
 st.caption("Overview of the model and of the images classified so far.")
 
-# Model headline numbers
-st.subheader("Model Results (Test Set)")
-m1, m2, m3 = st.columns(3)
-if metrics:
-    per_class = metrics.get("per_class", {})
-    m1.metric("Test Accuracy", f"{metrics['test_accuracy']:.1%}")
-    m2.metric("Test Macro F1", f"{metrics['test_macro_f1']:.2f}")
-    m3.metric("Test Images", f"{sum(v.get('support', 0) for v in per_class.values()):,}")
-    st.caption(f"Model: {MODEL_NAME}. See the Model Performance page for details.")
-else:
-    m1.metric("Test Accuracy", "—")
-    m2.metric("Test Macro F1", "—")
-    m3.metric("Test Images", "—")
-    st.caption(f"No results yet. These fill in once "
-               f"`docs/data_reports/{METRICS_FILE.name}` is added.")
+if main["error"]:
+    st.error(main["error"])
 
-# Model figures
+
+split = main["label"]                     
+split_word = f"{split} " if split else ""
+pc = main["per_class"]
+shown = pc.dropna(axis=1, how="all") if pc is not None else None
+
+with st.container(border=True):
+    title = f"#### Model Results ({split} Set) · {chosen_label}" if split \
+        else f"#### Model Results · {chosen_label}"
+    st.markdown(title)
+    c1, c2, c3, c4, c5 = st.columns(5)
+    best = weak = None
+    if shown is not None and "F1" in shown.columns and shown["F1"].notna().any():
+        best, weak = shown["F1"].idxmax(), shown["F1"].idxmin()
+
+    c1.metric(f"{split_word}Accuracy",
+              f"{main['accuracy']:.1%}" if main["accuracy"] is not None else "—")
+    c2.metric(f"{split_word}Macro F1",
+              f"{main['macro_f1']:.2f}" if main["macro_f1"] is not None else "—")
+    if main["total_images"] is not None:
+        c3.metric("Images", f"{main['total_images']:,}")
+    else:
+        c3.metric("Epochs Trained",
+                  main["epochs_total"] if main["epochs_total"] is not None else "—")
+    c4.metric("Best Class (F1)", best.title() if best else "—")
+    c5.metric("Weakest Class (F1)", weak.title() if weak else "—")
+    if main["data"] is None:
+        st.caption(f"No results yet. These fill in once "
+                   f"`docs/data_reports/{metrics_path().name}` is available.")
+    elif split == "Validation":
+        st.caption("Validation scores. The test set is kept for one final evaluation.")
+
+st.subheader("Per-Class Scores")
+if shown is not None:
+    score_cols = [c for c in ["Precision", "Recall", "F1"] if c in shown.columns]
+    config = {
+        "Test images": st.column_config.NumberColumn("Images", format="%d"),
+        "Precision": st.column_config.ProgressColumn(
+            "Precision", min_value=0.0, max_value=1.0, format="%.2f"),
+        "Recall": st.column_config.ProgressColumn(
+            "Recall", min_value=0.0, max_value=1.0, format="%.2f"),
+        "F1": st.column_config.ProgressColumn(
+            "F1", min_value=0.0, max_value=1.0, format="%.2f"),
+    }
+    left, right = st.columns([3, 2])
+    with left:
+        with st.container(border=True):
+            st.markdown("**Scores per class**")
+            st.bar_chart(shown[score_cols])
+    with right:
+        with st.container(border=True):
+            st.markdown("**Table**")
+            st.dataframe(shown, column_config={k: v for k, v in config.items()
+                                               if k in shown.columns})
+else:
+    st.info("Per-class scores are not available yet.")
+
 st.subheader("Model Figures")
 f1, f2 = st.columns(2)
 with f1:
-    cm_path = find_figure(f"{MODEL_NAME}_test_confusion*.png", "*test_confusion*.png")
-    if cm_path:
+    with st.container(border=True):
+        cm_path = find_figure(f"{MODEL_NAME}_test_confusion*.png", "*test_confusion*.png")
         st.markdown("**Confusion matrix (test)**")
-        st.image(str(cm_path))
-    else:
-        st.info("Confusion matrix not found in `docs/figures/`.")
+        if cm_path:
+            st.image(str(cm_path))
+        else:
+            st.info("Confusion matrix not found in `docs/figures/`.")
 with f2:
-    curves = find_figure(f"{MODEL_NAME}*curve*.png", f"{MODEL_NAME}*history*.png")
-    if curves:
+    with st.container(border=True):
+        curves = find_figure(f"{MODEL_NAME}*curve*.png", f"{MODEL_NAME}*history*.png")
         st.markdown("**Learning curves**")
-        st.image(str(curves))
-    else:
-        st.info("Learning curves not found in `docs/figures/`.")
+        if curves:
+            st.image(str(curves))
+        else:
+            st.info("Learning curves not found in `docs/figures/`.")
 
-# Prediction history
+comp = comparison_table()
+if comp is not None:
+    st.subheader("Model Comparison")
+    with st.container(border=True):
+        st.dataframe(comp, column_config={
+            "Accuracy": st.column_config.ProgressColumn(
+                "Accuracy", min_value=0.0, max_value=1.0, format="%.2f"),
+            "Macro F1": st.column_config.ProgressColumn(
+                "Macro F1", min_value=0.0, max_value=1.0, format="%.2f"),
+        })
+
 st.subheader("Prediction History")
-history = load_history()
-if not history:
-    h1, h2 = st.columns(2)
-    h1.metric("Total Predictions", 0)
-    h2.metric("Classes Seen", 0)
-    st.info("No predictions yet. Class counts will appear here once images "
-            "have been classified.")
-else:
-    labels = [
-        pretty(label)
-        for record in history
-        for label in record.get("labels", [])
-    ]
-    counts = pd.Series(labels, dtype="string").value_counts()
-    h1, h2 = st.columns(2)
-    h1.metric("Total Predictions", f"{len(labels):,}")
-    h2.metric("Classes Seen", len(counts))
-    st.markdown("**Predictions per class**")
-    st.bar_chart(counts)
+history, class_col, hist_err = load_prediction_history()
+with st.container(border=True):
+    if hist_err:
+        st.error(hist_err)
+    if history is None:
+        h1, h2 = st.columns(2)
+        h1.metric("Total Predictions", 0)
+        h2.metric("Classes Seen", 0)
+        st.info("No predictions yet. Class counts will appear here once images "
+                "have been classified.")
+    else:
+        h1, h2 = st.columns(2)
+        h1.metric("Total Predictions", f"{len(history):,}")
+        if class_col is None:
+            h2.metric("Classes Seen", "—")
+            st.warning("The history file has no class column I recognise. "
+                       f"Columns found: {', '.join(map(str, history.columns))}.")
+        else:
+            counts = history[class_col].value_counts()
+            counts.index = [pretty(c) for c in counts.index]
+            h2.metric("Classes Seen", len(counts))
+            st.markdown("**Predictions per class**")
+            st.bar_chart(counts)
