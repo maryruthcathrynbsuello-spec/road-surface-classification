@@ -1,0 +1,21 @@
+{
+  "run": "efficientnetb0_v4",
+  "val_accuracy": 0.6969026548672567,
+  "val_macro_f1": 0.7238291925900552,
+  "per_class_f1": {
+    "crack": 0.8713692946058091,
+    "damaged_asphalt": 0.5106382978723404,
+    "normal": 0.7086614173228346,
+    "open_manhole": 0.8888888888888888,
+    "pothole": 0.46408839779005523,
+    "water-filled_pothole": 0.8993288590604027
+  },
+  "backbone": "efficientnetb0",
+  "epochs_head": 10,
+  "epochs_fine": 17,
+  "params": 4057257,
+  "lr_head": 0.001,
+  "lr_fine": 5e-05,
+  "fine_tune_layers": 100,
+  "batch_size": 32
+}
