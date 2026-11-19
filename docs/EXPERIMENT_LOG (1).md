@@ -19,13 +19,17 @@ Only **validation** numbers go here. The test set is used once, in Stage 3.
 
 | efficientnetb0_v2 | 2026-10-06 | Mary Ruth Cathryn B. Suello | EfficientNetB0 | head lr 1e-3, fine lr 1e-5, 30 layers, dropout 0.3, batch 32 | head 15 + fine 20 = 35 | 0.628 | 0.646 | val | Best so far. Ran all 35 epochs, so early stopping did not fire. Weakest class: pothole (F1 0.426). |
 
-FINAL MODEL : efficientnetb0_v2
-2026-10-08
---- efficientnetb0_v2 ---
+| efficientnetb0_v3 | 2026-11-18 | Mary Ruth Cathryn B. Suello | EfficientNetB0 | head lr 1e-3, fine lr 5e-5, 100 layers*, dropout 0.3*, batch 32 | head 10 + fine 12 = 22 | 0.692 | 0.716* | pothole | Big gain over v2 (+6.4 points, 313 vs 284 of 452 correct). Early stopping fired in fine-tuning: best val loss 0.773 at epoch 16, then 6 epochs without improvement. Val accuracy jumped from 0.586 to 0.637 in the first fine-tuning epoch. Overfit after epoch 16 (train 0.82 vs val 0.70). Weakest class: pothole (F1 about 0.47). Over-predicts pothole (97 predicted vs 68 true); 38% of damaged asphalt go to pothole. |
+
+| efficientnetb0_v4 | 2026-11-18 | Mary Ruth Cathryn B. Suello | EfficientNetB0 | head lr 1e-3, fine lr 5e-5, 100 layers*, dropout 0.5*, batch 32, stronger augmentation (rotation 0.10, zoom 0.20, shift 0.10, brightness 0.25, contrast 0.3) | head 10 + fine 17 = 27 | 0.697 | 0.724 | pothole | Same accuracy as v3 within noise (315 vs 313 of 452) but a smaller train-validation gap (0.71 vs 0.70 at the best epoch) and lower val loss (0.760 vs 0.773). Early stopping fired: best epoch 21, stopped 6 epochs later. LR halved by ReduceLROnPlateau at epoch 8 (head) and epoch 25 (fine). Weakest classes: pothole (F1 0.464) and damaged asphalt (0.511). Chosen as the final model. |
+
+FINAL MODEL : efficientnetb0_v4
+2026-11-19
+--- efficientnetb0_v4 ---
 backbone: efficientnetb0
-layers in base: 238 | trainable layers: 24
+layers in base: 238 | trainable layers: [run model_details; expect about 80, v2 had 24]
 total params: 4,057,257
-file size (MB): 29.0
+file size (MB): 31.4
 
 # efficientnetb0_v2 Testing
 test accuracy 0.609, macro F1 0.652, open manhole 9 of 11, plus the confusion matrix. Present the baseline (0.325 on validation) to EfficientNetB0 as the main comparison.

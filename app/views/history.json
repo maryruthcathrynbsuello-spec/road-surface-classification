@@ -217,5 +217,208 @@
       ]
     ],
     "action": "An open manhole is a safety hazard. Report it promptly."
+  },
+  {
+    "id": "caf2e290abcb45129813faac48e49e78",
+    "time": "2026-11-19 14:31:10",
+    "file_name": "open-manhole_test(2).jpg",
+    "confidence": 99.9,
+    "labels": [
+      "open_manhole"
+    ],
+    "status": "OK",
+    "image": "caf2e290abcb45129813faac48e49e78.jpg",
+    "recognized": true,
+    "best_guess": "open_manhole",
+    "threshold": 60.0,
+    "top3": [
+      [
+        "open_manhole",
+        99.9
+      ],
+      [
+        "normal",
+        0.0
+      ],
+      [
+        "pothole",
+        0.0
+      ]
+    ],
+    "action": "An open manhole is a safety hazard. Report it promptly."
+  },
+  {
+    "id": "c90d36967cc44168a8106bafd1381145",
+    "time": "2026-11-19 14:32:00",
+    "file_name": "damaged_asphalt_test (for test 2).jpg",
+    "confidence": 45.8,
+    "labels": [
+      "Not recognized"
+    ],
+    "status": "Needs review",
+    "image": "c90d36967cc44168a8106bafd1381145.jpg",
+    "recognized": false,
+    "best_guess": "pothole",
+    "threshold": 60.0,
+    "top3": [
+      [
+        "pothole",
+        45.8
+      ],
+      [
+        "damaged_asphalt",
+        35.8
+      ],
+      [
+        "water-filled_pothole",
+        12.6
+      ]
+    ],
+    "action": null
+  },
+  {
+    "id": "3c40d8b26a2742439526e91a0a0fef4a",
+    "time": "2026-11-19 14:32:48",
+    "file_name": "blurredPhoto_test.jpg",
+    "confidence": 48.0,
+    "labels": [
+      "Not recognized"
+    ],
+    "status": "Needs review",
+    "image": "3c40d8b26a2742439526e91a0a0fef4a.jpg",
+    "recognized": false,
+    "best_guess": "damaged_asphalt",
+    "threshold": 60.0,
+    "top3": [
+      [
+        "damaged_asphalt",
+        48.0
+      ],
+      [
+        "pothole",
+        25.2
+      ],
+      [
+        "water-filled_pothole",
+        22.8
+      ]
+    ],
+    "action": null
+  },
+  {
+    "id": "307fe87171e34908bf1f212c488edfa1",
+    "time": "2026-11-19 14:32:48",
+    "file_name": "crack_test (for test 2).jpg",
+    "confidence": 93.0,
+    "labels": [
+      "crack"
+    ],
+    "status": "OK",
+    "image": "307fe87171e34908bf1f212c488edfa1.jpg",
+    "recognized": true,
+    "best_guess": "crack",
+    "threshold": 60.0,
+    "top3": [
+      [
+        "crack",
+        93.0
+      ],
+      [
+        "pothole",
+        4.7
+      ],
+      [
+        "damaged_asphalt",
+        1.7
+      ]
+    ],
+    "action": "Cracks can be monitored. Report them if they are wide or spreading."
+  },
+  {
+    "id": "b670e83221d64db79762b7af6a378680",
+    "time": "2026-11-19 14:33:29",
+    "file_name": "pothole_test (2).JPG",
+    "confidence": 93.9,
+    "labels": [
+      "pothole"
+    ],
+    "status": "OK",
+    "image": "b670e83221d64db79762b7af6a378680.jpg",
+    "recognized": true,
+    "best_guess": "pothole",
+    "threshold": 60.0,
+    "top3": [
+      [
+        "pothole",
+        93.9
+      ],
+      [
+        "damaged_asphalt",
+        5.0
+      ],
+      [
+        "open_manhole",
+        0.7
+      ]
+    ],
+    "action": "Consider reporting this to your local roads authority."
+  },
+  {
+    "id": "389760e52b7c471a80da78375474b8cc",
+    "time": "2026-11-19 14:33:29",
+    "file_name": "pothole_test.jpg",
+    "confidence": 83.3,
+    "labels": [
+      "pothole"
+    ],
+    "status": "OK",
+    "image": "389760e52b7c471a80da78375474b8cc.jpg",
+    "recognized": true,
+    "best_guess": "pothole",
+    "threshold": 60.0,
+    "top3": [
+      [
+        "pothole",
+        83.3
+      ],
+      [
+        "damaged_asphalt",
+        16.6
+      ],
+      [
+        "water-filled_pothole",
+        0.1
+      ]
+    ],
+    "action": "Consider reporting this to your local roads authority."
+  },
+  {
+    "id": "97c8841c1fde4416bb59a93396cb4b2f",
+    "time": "2026-11-19 14:34:13",
+    "file_name": "water-filled-pothole_test (for test 2).jpg",
+    "confidence": 99.6,
+    "labels": [
+      "water-filled_pothole"
+    ],
+    "status": "OK",
+    "image": "97c8841c1fde4416bb59a93396cb4b2f.jpg",
+    "recognized": true,
+    "best_guess": "water-filled_pothole",
+    "threshold": 60.0,
+    "top3": [
+      [
+        "water-filled_pothole",
+        99.6
+      ],
+      [
+        "pothole",
+        0.2
+      ],
+      [
+        "open_manhole",
+        0.1
+      ]
+    ],
+    "action": "The depth is hidden by the water. Treat it like a pothole and consider reporting it."
   }
 ]

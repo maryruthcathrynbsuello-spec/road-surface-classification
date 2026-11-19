@@ -2,7 +2,7 @@
 
 Place at app/utils/inference.py (next to an empty __init__.py).
 Model files go in app/models/ (do not commit them to Git):
-    efficientnetb0_v2.keras, preprocessing_config.json
+    efficientnetb0_v4.keras, preprocessing_config.json
 """
 import io
 import json
@@ -20,7 +20,7 @@ except Exception:                       # pragma: no cover
 
 APP_DIR = Path(__file__).resolve().parent.parent
 MODEL_DIR = APP_DIR / 'models'
-MODEL_PATH = MODEL_DIR / 'efficientnetb0_v2.keras'
+MODEL_PATH = MODEL_DIR / 'efficientnetb0_v4.keras'
 CONFIG_PATH = MODEL_DIR / 'preprocessing_config.json'
 
 # ---------- easy-to-change settings ----------

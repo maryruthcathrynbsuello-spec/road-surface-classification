@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 FIG_DIR = ROOT / "docs" / "figures"
 REPORT_DIR = ROOT / "docs" / "data_reports"
 
-MODEL_NAME = "efficientnetb0_v2"          
+MODEL_NAME = "efficientnetb0_v4"          
 HISTORY_FILE = ROOT / "app" / "views" / "history.json"   
 
 CLASSES = ["crack", "damaged_asphalt", "normal", "open_manhole",
